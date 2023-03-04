@@ -196,10 +196,10 @@ RegisterNetEvent('qb-houserobbery:server:searchCabin', function(cabin, house)
                     end
 
                     Player.Functions.AddItem(randomItem, itemAmount)
-                    TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'House Robbery', 'yellow', ('**Name:** %s | **License:** ||(%s)||\n **Info:** Robbed (House Furniture) and recieved (%s) %s'):format(GetPlayerName(src), itemAmount, randomItem)) 
+                    TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'House Robbery', 'yellow', ('**Name:** %s | **License:** ||(%s)||\n **Info:** Robbed (House Furniture) and recieved (%s) %s'):format(GetPlayerName(src), Player.PlayerData.license, itemAmount, randomItem)) 
                 else
                     Player.Functions.AddItem(randomItem, 1)
-                    TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'House Robbery', 'yellow', ('**Name:** %s | **License:** ||(%s)||\n **Info:** Robbed (House Furniture) and recieved a %s'):format(GetPlayerName(src), randomItem)) 
+                    TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'House Robbery', 'yellow', ('**Name:** %s | **License:** ||(%s)||\n **Info:** Robbed (House Furniture) and recieved a %s'):format(GetPlayerName(src), Player.PlayerData.license, randomItem)) 
                 end
                 TriggerClientEvent('inventory:client:ItemBox', src, itemInfo, "add")
             end
