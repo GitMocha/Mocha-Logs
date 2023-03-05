@@ -38,7 +38,7 @@ QBCore.Commands.Add('setmoney', Lang:t("command.setmoney.help"), { { name = Lang
     local Staff = QBCore.Functions.GetPlayer(src)
     if Target then
         Target.Functions.SetMoney(tostring(args[2]), tonumber(args[3]))
-        TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Money Set (staff)', 'white', ('**Staff:** %s | **License:** ||(%s)||\n **Player:** %s | **License:** ||(%s)||\n **Info:** Set %s to ($%s) '):format(GetPlayerName(src), Staff.PlayerData.license, GetPlayerName(args[1]), Target.PlayerData.license, args[2], args[3]))
+        TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Money Set (staff)', 'white', ('**Staff:** %s | **License:** ||(%s)||\n **Player:** %s | **License:** ||(%s)||\n **Info:** Set %s ($%s) '):format(GetPlayerName(src), Staff.PlayerData.license, GetPlayerName(args[1]), Target.PlayerData.license, args[2], args[3]))
     else
         TriggerClientEvent('QBCore:Notify', source, Lang:t('error.not_online'), 'error')
     end
