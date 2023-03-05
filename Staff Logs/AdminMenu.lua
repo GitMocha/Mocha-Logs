@@ -142,7 +142,7 @@ RegisterNetEvent('qb-admin:server:bring', function(player)
         local coords = GetEntityCoords(admin)
         local target = GetPlayerPed(player.id)
         SetEntityCoords(target, coords)
-        TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Into Vehicle (Staff)', 'white', ('**Staff:** %s | **License:** ||(%s)||\n **Player:** %s | **License:** ||(%s)||\n **Info:** Teleported player to them'):format(GetPlayerName(src), Staff.PlayerData.license, GetPlayerName(tonumber(player.id)), Player.PlayerData.license))
+        TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Bring Player (Staff)', 'white', ('**Staff:** %s | **License:** ||(%s)||\n **Player:** %s | **License:** ||(%s)||\n **Info:** Teleported player to them'):format(GetPlayerName(src), Staff.PlayerData.license, GetPlayerName(tonumber(player.id)), Player.PlayerData.license))
     else
         BanPlayer(src)
     end
