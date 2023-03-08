@@ -4,6 +4,16 @@
 ---- SERVER ----
 ----------------
 
+-- R1M0 TPM Log
+-- file-name : qb-core | commands.lua
+-- line : 109 [my ones a bit modified just control f and search for QBCore.Commands.Add('tpm' ]
+-- Replace 'tpm' with the one below
+QBCore.Commands.Add('tpm', 'TP To Marker (Admin Only)', {}, false, function(source)
+    local Player = QBCore.Functions.GetPlayer(source)
+    TriggerClientEvent('QBCore:Command:GoToMarker', source)
+    TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'TPM', 'pink', '**' .. GetPlayerName(source) .. '** (CitizenID: ' .. Player.PlayerData.citizenid .. ' | ID: ' .. source .. ') Used /TPM')
+end, 'admin')
+
 -- file-name : qb-core | commands.lua
 -- line : 186 (may differ mines heavily modified)
 -- Replace 'car' with the one below.
