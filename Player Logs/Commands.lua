@@ -123,7 +123,7 @@ QBCore.Commands.Add('bill', 'Bill A Player', {{name = 'id', help = 'Player ID'},
 end)
 
 -- file-name : qb-vehicleshop | server.lua
--- line : 448
+-- line : 448 
 -- Replace transfervehicle with the one below.
 QBCore.Commands.Add('transfervehicle', Lang:t('general.command_transfervehicle'), {{name = 'ID', help = Lang:t('general.command_transfervehicle_help')}, {name = 'amount', help = Lang:t('general.command_transfervehicle_amount')}}, false, function(source, args)
     local src = source
@@ -217,3 +217,75 @@ QBCore.Commands.Add("kill", Lang:t('info.kill'), {{name = "id", help = Lang:t('i
 	end
 end, "admin")
 
+-- file-name : qb-policejob | server.lua
+-- line : 119
+-- Replace "grantlicense" command with the one below.
+QBCore.Commands.Add("grantlicense", Lang:t("commands.license_grant"), {{name = "id", help = Lang:t('info.player_id')}, {name = "license", help = Lang:t('info.license_type')}}, true, function(source, args)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    if Player.PlayerData.job.name == "police" and Player.PlayerData.job.grade.level >= Config.LicenseRank then
+        if args[2] == "driver" or args[2] == "weapon" then
+            local SearchedPlayer = QBCore.Functions.GetPlayer(tonumber(args[1]))
+            if not SearchedPlayer then return end
+            local licenseTable = SearchedPlayer.PlayerData.metadata["licences"]
+            if licenseTable[args[2]] then
+                TriggerClientEvent('QBCore:Notify', src, Lang:t("error.license_already"), "error")
+                return
+            end
+            licenseTable[args[2]] = true
+            SearchedPlayer.Functions.SetMetaData("licences", licenseTable)
+            TriggerClientEvent('QBCore:Notify', SearchedPlayer.PlayerData.source, Lang:t("success.granted_license"), "success")
+            TriggerClientEvent('QBCore:Notify', src, Lang:t("success.grant_license"), "success")
+            TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Grant License (Player)', 'white', ('**Officer:** %s | **License:** ||(%s)||\n **Job:** %s | **Grade:** %s\n **Citizen:** %s | **License:** ||(%s)||\n **Info:** Granted them a %s license. '):format(GetPlayerName(src), Player.PlayerData.license, Player.PlayerData.job.name, Player.PlayerData.job.grade.level, GetPlayerName(SearchedPlayer.PlayerData.source), SearchedPlayer.PlayerData.license, args[2]))
+        else
+            TriggerClientEvent('QBCore:Notify', src, Lang:t("error.error_license_type"), "error")
+        end
+    else
+        TriggerClientEvent('QBCore:Notify', src, Lang:t("error.rank_license"), "error")
+    end
+end)
+
+-- file-name : qb-policejob | server.lua
+-- line : 144
+-- Replace "revokelicense" command with the one below.
+QBCore.Commands.Add("revokelicense", Lang:t("commands.license_revoke"), {{name = "id", help = Lang:t('info.player_id')}, {name = "license", help = Lang:t('info.license_type')}}, true, function(source, args)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    if Player.PlayerData.job.name == "police" and Player.PlayerData.job.grade.level >= Config.LicenseRank then
+        if args[2] == "driver" or args[2] == "weapon" then
+            local SearchedPlayer = QBCore.Functions.GetPlayer(tonumber(args[1]))
+            if not SearchedPlayer then return end
+            local licenseTable = SearchedPlayer.PlayerData.metadata["licences"]
+            if not licenseTable[args[2]] then
+                TriggerClientEvent('QBCore:Notify', src, Lang:t("error.error_license"), "error")
+                return
+            end
+            licenseTable[args[2]] = false
+            SearchedPlayer.Functions.SetMetaData("licences", licenseTable)
+            TriggerClientEvent('QBCore:Notify', SearchedPlayer.PlayerData.source, Lang:t("error.revoked_license"), "error")
+            TriggerClientEvent('QBCore:Notify', src, Lang:t("success.revoke_license"), "success")
+            TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Revoke License (Player)', 'white', ('**Officer:** %s | **License:** ||(%s)||\n **Job:** %s | **Grade:** %s\n **Citizen:** %s | **License:** ||(%s)||\n **Info:** Revoked their %s license. '):format(GetPlayerName(src), Player.PlayerData.license, Player.PlayerData.job.name, Player.PlayerData.job.grade.level, GetPlayerName(SearchedPlayer.PlayerData.source), SearchedPlayer.PlayerData.license, args[2]))
+        else
+            TriggerClientEvent('QBCore:Notify', src, Lang:t("error.error_license"), "error")
+        end
+    else 
+        TriggerClientEvent('QBCore:Notify', src, Lang:t("error.rank_revoke"), "error")
+    end
+end)
+
+-- file-name : qb-policejob | server.lua
+-- line : 275
+-- Replace "cam" command with the one below.
+QBCore.Commands.Add("cam", Lang:t("commands.camera"), {{name = "camid", help = Lang:t('info.camera_id')}}, false, function(source, args)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    if Player.PlayerData.job.name == "police" and Player.PlayerData.job.onduty then
+        TriggerClientEvent("police:client:ActiveCamera", src, tonumber(args[1]))
+        TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'View CCTV (Player)', 'white', ('**Officer:** %s | **License:** ||(%s)||\n **Job:** %s | **Grade:** %s\n **Info:** Connected to camera %s. '):format(GetPlayerName(src), Player.PlayerData.license, Player.PlayerData.job.name, Player.PlayerData.job.grade.level, args[1]))
+    else
+        TriggerClientEvent('QBCore:Notify', src, Lang:t("error.on_duty_police_only"), 'error')
+    end
+end)
+
+
+  

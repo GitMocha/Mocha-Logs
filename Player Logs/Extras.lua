@@ -416,3 +416,52 @@ RegisterNetEvent('qb-cityhall:server:ApplyJob', function(job, cityhallCoords)
         TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Cityhall Job (Player)', 'white', ('**Player:** %s | **License:** ||(%s)||\n **Info:** Applied New Job **%s**. '):format(GetPlayerName(src), Player.PlayerData.license, data.job))
     end
 end)
+
+-- file-name : qb-policejob | server.lua
+-- line : 780 (may differ mines heavily modified)
+-- Replace JailPlayer with the one below
+RegisterNetEvent('police:server:JailPlayer', function(playerId, time)
+    local src = source
+    local playerPed = GetPlayerPed(src)
+    local targetPed = GetPlayerPed(playerId)
+    local playerCoords = GetEntityCoords(playerPed)
+    local targetCoords = GetEntityCoords(targetPed)
+    if #(playerCoords - targetCoords) > 2.5 then return DropPlayer(src, "Attempted exploit abuse") end
+
+    local Player = QBCore.Functions.GetPlayer(src)
+    local OtherPlayer = QBCore.Functions.GetPlayer(playerId)
+    if not Player or not OtherPlayer or Player.PlayerData.job.name ~= "police" then return end
+
+    local currentDate = os.date("*t")
+    if currentDate.day == 31 then
+        currentDate.day = 30
+    end
+
+    OtherPlayer.Functions.SetMetaData("injail", time)
+    OtherPlayer.Functions.SetMetaData("criminalrecord", {
+        ["hasRecord"] = true,
+        ["date"] = currentDate
+    })
+    TriggerClientEvent("police:client:SendToJail", OtherPlayer.PlayerData.source, time)
+    TriggerClientEvent('QBCore:Notify', src, Lang:t("info.sent_jail_for", {time = time}))
+    TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Jailing (Player)', 'white', ('**Officer:** %s | **License:** ||(%s)||\n **Job:** %s | **Grade:** %s\n **Citizen:** %s | **License:** ||(%s)||\n **Info:** Jailed Player For %s Months.'):format(GetPlayerName(src), Player.PlayerData.license, Player.PlayerData.job.name, Player.PlayerData.job.grade.level, GetPlayerName(playerId), OtherPlayer.PlayerData.license, time))
+end)  
+
+-- file-name : qb-policejob | server.lua
+-- line : 672 (may differ mines heavily modified)
+-- Replace CuffPlayer with the one below
+RegisterNetEvent('police:server:CuffPlayer', function(playerId, isSoftcuff)
+    local src = source
+    local playerPed = GetPlayerPed(src)
+    local targetPed = GetPlayerPed(playerId)
+    local playerCoords = GetEntityCoords(playerPed)
+    local targetCoords = GetEntityCoords(targetPed)
+    if #(playerCoords - targetCoords) > 2.5 then return DropPlayer(src, "Attempted exploit abuse") end
+
+    local Player = QBCore.Functions.GetPlayer(src)
+    local CuffedPlayer = QBCore.Functions.GetPlayer(playerId)
+    if not Player or not CuffedPlayer or (not Player.Functions.GetItemByName("handcuffs") and Player.PlayerData.job.name ~= "police") then return end
+
+    TriggerClientEvent("police:client:GetCuffed", CuffedPlayer.PlayerData.source, Player.PlayerData.source, isSoftcuff)
+    TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Cuffing (Player)', 'white', ('**Officer:** %s | **License:** ||(%s)||\n **Job:** %s | **Grade:** %s\n **Citizen:** %s | **License:** ||(%s)||\n **Info:** Cuffed Player. '):format(GetPlayerName(src), Player.PlayerData.license, Player.PlayerData.job.name, Player.PlayerData.job.grade.level, GetPlayerName(playerId), CuffedPlayer.PlayerData.license))
+end)
