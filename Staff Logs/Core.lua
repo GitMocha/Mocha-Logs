@@ -73,3 +73,13 @@ QBCore.Commands.Add('setgang', Lang:t("command.setgang.help"), { { name = Lang:t
         TriggerClientEvent('QBCore:Notify', source, Lang:t('error.not_online'), 'error')
     end
 end, 'admin')
+
+-- file-name : qb-core | commands.lua
+-- line : 118 (may differ mines heavily modified)
+-- Replace 'tpm' with the one below.
+QBCore.Commands.Add('tpm', Lang:t("command.tpm.help"), {}, false, function(source)
+    local src = source
+    local Staff = QBCore.Functions.GetPlayer(src)
+    TriggerClientEvent('QBCore:Command:GoToMarker', src)
+    TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'TPM (staff)', 'white', ('**Staff:** %s | **License:** ||(%s)||\n **Info:** Used TPM Command. '):format(GetPlayerName(src), Staff.PlayerData.license))
+end, 'admin')

@@ -177,3 +177,43 @@ QBCore.Commands.Add('transfervehicle', Lang:t('general.command_transfervehicle')
     end
 end)
 
+-- file-name : qb-ambulancejob | server.lua
+-- line : 391
+-- Replace "revive" command with the one below.
+QBCore.Commands.Add("revive", Lang:t('info.revive_player_a'), {{name = "id", help = Lang:t('info.player_id')}}, false, function(source, args)
+	local src = source
+	local Staff = QBCore.Functions.GetPlayer(src)
+	if args[1] then
+		local Player = QBCore.Functions.GetPlayer(tonumber(args[1]))
+		if Player then
+			TriggerClientEvent('hospital:client:Revive', Player.PlayerData.source)
+			TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Revive (Staff)', 'white', ('**Staff:** %s | **License:** ||(%s)||\n **Player:** %s | **License:** ||(%s)||\n **Info:** Revived a Player. '):format(GetPlayerName(src), Staff.PlayerData.license, GetPlayerName(tonumber(args[1])), Player.PlayerData.license))
+		else
+			TriggerClientEvent('QBCore:Notify', src, Lang:t('error.not_online'), "error")
+		end
+	else
+		TriggerClientEvent('hospital:client:Revive', src)
+		TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Revive (Staff)', 'white', ('**Staff:** %s | **License:** ||(%s)||\n **Info:** Revived Themself. '):format(GetPlayerName(src), Staff.PlayerData.license))
+	end
+end, "admin")
+
+-- file-name : qb-ambulancejob | server.lua
+-- line : 422
+-- Replace "kill" command with the one below.
+QBCore.Commands.Add("kill", Lang:t('info.kill'), {{name = "id", help = Lang:t('info.player_id')}}, false, function(source, args)
+	local src = source
+	local Staff = QBCore.Functions.GetPlayer(src)
+	if args[1] then
+		local Player = QBCore.Functions.GetPlayer(tonumber(args[1]))
+		if Player then
+			TriggerClientEvent('hospital:client:KillPlayer', Player.PlayerData.source)
+			TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Kill (Staff)', 'white', ('**Staff:** %s | **License:** ||(%s)||\n **Player:** %s | **License:** ||(%s)||\n **Info:** Killed a Player. '):format(GetPlayerName(src), Staff.PlayerData.license, GetPlayerName(tonumber(args[1])), Player.PlayerData.license))
+		else
+			TriggerClientEvent('QBCore:Notify', src, Lang:t('error.not_online'), "error")
+		end
+	else
+		TriggerClientEvent('hospital:client:KillPlayer', src)
+		TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Kill (Staff)', 'white', ('**Staff:** %s | **License:** ||(%s)||\n **Info:** Killed Themself. '):format(GetPlayerName(src), Staff.PlayerData.license))
+	end
+end, "admin")
+
