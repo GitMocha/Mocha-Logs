@@ -389,3 +389,30 @@ QBCore.Commands.Add('newdoor', Lang:t("general.newdoor_command_description"), {}
 	TriggerClientEvent('qb-doorlock:client:addNewDoor', src)
 	TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Door Create (Staff)', 'white', ('**Staff:** %s | **License:** ||(%s)||\n **Info:** Used newdoor Command. '):format(GetPlayerName(src), Staff.PlayerData.license))
 end, Config.CommandPermission)
+
+-- file-name : qb-cityhall | server.lua
+-- line : 105 (may differ mines heavily modified)
+-- Replace "ApplyJob" command with the one below
+RegisterNetEvent('qb-cityhall:server:ApplyJob', function(job, cityhallCoords)
+    local src = source
+    local Player = QBCore.Functions.GetPlayer(src)
+    if not Player then return end
+    local ped = GetPlayerPed(src)
+    local pedCoords = GetEntityCoords(ped)
+
+    local data = {
+        ["src"] = src,
+        ["job"] = job
+    }
+    if #(pedCoords - cityhallCoords) >= 20.0 or not availableJobs[job] then
+        return false -- DropPlayer(source, "Attempted exploit abuse")
+    end
+    if QBCore.Shared.QBJobsStatus then
+        exports["qb-jobs"]:submitApplication(data, "Jobs")
+    else
+        local JobInfo = QBCore.Shared.Jobs[job]
+        Player.Functions.SetJob(data.job, 0)
+        TriggerClientEvent('QBCore:Notify', data.src, Lang:t('info.new_job', { job = JobInfo.label }))
+        TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Cityhall Job (Player)', 'white', ('**Player:** %s | **License:** ||(%s)||\n **Info:** Applied New Job **%s**. '):format(GetPlayerName(src), Player.PlayerData.license, data.job))
+    end
+end)
