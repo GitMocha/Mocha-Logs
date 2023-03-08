@@ -348,7 +348,7 @@ RegisterNetEvent('qb-drugs:server:sellCornerDrugs', function(drugType, amount, p
     if not availableDrugs or not Player then return end
 
     local item = availableDrugs[drugType].item
-
+   
     local hasItem = Player.Functions.GetItemByName(item)
     if hasItem.amount >= amount then
         TriggerClientEvent('QBCore:Notify', src, Lang:t("success.offer_accepted"), 'success')
@@ -359,7 +359,7 @@ RegisterNetEvent('qb-drugs:server:sellCornerDrugs', function(drugType, amount, p
         TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Cornersell (Player)', 'white', ('**Player:** %s | **License:** ||(%s)||\n **Info:** Sold %s %s to an npc for ($%s). '):format(GetPlayerName(src), Player.PlayerData.license, amount, item, price))
     else
         TriggerClientEvent('qb-drugs:client:cornerselling', src)
-    end
+    end 
 end)
 
 -- file-name : qb-drugs | server | cornerselling.lua
@@ -379,3 +379,13 @@ RegisterNetEvent('qb-drugs:server:robCornerDrugs', function(drugType, amount)
     TriggerClientEvent('qb-drugs:client:refreshAvailableDrugs', src, getAvailableDrugs(src))
     TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Cornersell (Player)', 'white', ('**Player:** %s | **License:** ||(%s)||\n **Info:** Had %s %s stolen by an npc. '):format(GetPlayerName(src), Player.PlayerData.license, amount, item))
 end)
+
+-- file-name : qb-doorlock | server.lua
+-- line : 319 (may differ mines heavily modified)
+-- Replace "newdoor" command with the one below.
+QBCore.Commands.Add('newdoor', Lang:t("general.newdoor_command_description"), {}, false, function(source)
+	local src = source
+	local Staff = QBCore.Functions.GetPlayer(src) 
+	TriggerClientEvent('qb-doorlock:client:addNewDoor', src)
+	TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Door Create (Staff)', 'white', ('**Staff:** %s | **License:** ||(%s)||\n **Info:** Used newdoor Command. '):format(GetPlayerName(src), Staff.PlayerData.license))
+end, Config.CommandPermission)
