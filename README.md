@@ -13,6 +13,4 @@ free to make a PR or Dm me on discord @Mocha#3333.
 I've now created a discord (link to follow). This will be for future scripts (paid and free)
 member support and suggestions/feedback. 
 
-https://discord.gg/JsnQXHgk
-
 Thanks!
