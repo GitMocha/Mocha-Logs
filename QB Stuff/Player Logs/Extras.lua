@@ -415,7 +415,7 @@ RegisterNetEvent('qb-cityhall:server:ApplyJob', function(job, cityhallCoords)
         TriggerClientEvent('QBCore:Notify', data.src, Lang:t('info.new_job', { job = JobInfo.label }))
         TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Cityhall Job (Player)', 'white', ('**Player:** %s | **License:** ||(%s)||\n **Info:** Applied New Job **%s**. '):format(GetPlayerName(src), Player.PlayerData.license, data.job))
     end
-end)
+end) 
 
 -- file-name : qb-policejob | server.lua
 -- line : 780 (may differ mines heavily modified)
@@ -464,4 +464,73 @@ RegisterNetEvent('police:server:CuffPlayer', function(playerId, isSoftcuff)
 
     TriggerClientEvent("police:client:GetCuffed", CuffedPlayer.PlayerData.source, Player.PlayerData.source, isSoftcuff)
     TriggerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Cuffing (Player)', 'white', ('**Officer:** %s | **License:** ||(%s)||\n **Job:** %s | **Grade:** %s\n **Citizen:** %s | **License:** ||(%s)||\n **Info:** Cuffed Player. '):format(GetPlayerName(src), Player.PlayerData.license, Player.PlayerData.job.name, Player.PlayerData.job.grade.level, GetPlayerName(playerId), CuffedPlayer.PlayerData.license))
+end)
+
+-- file-name : qb-policejob | client.lua
+-- line : 423 (may differ mines heavily modified)
+-- Replace EvidenceStashDrawer with the one below
+RegisterNetEvent('police:client:EvidenceStashDrawer', function(data)
+    local currentEvidence = data.currentEvidence
+    local pos = GetEntityCoords(PlayerPedId())
+    local takeLoc = Config.Locations["evidence"][currentEvidence]
+
+    local PlayerData = QBCore.Functions.GetPlayerData()
+    local fullname = PlayerData.charinfo.firstname.." "..PlayerData.charinfo.lastname
+    local cid = PlayerData.citizenid
+
+    if not takeLoc then return end
+
+    if #(pos - takeLoc) <= 1.0 then
+        local drawer = exports['qb-input']:ShowInput({
+            header = Lang:t('info.evidence_stash', {value = currentEvidence}),
+            submitText = "open",
+            inputs = {
+                {
+                    type = 'number',
+                    isRequired = true,
+                    name = 'slot',
+                    text = Lang:t('info.slot')
+                }
+            }
+        })
+        if drawer then
+            if not drawer.slot then return end
+            TriggerServerEvent("inventory:server:OpenInventory", "stash", Lang:t('info.current_evidence', {value = currentEvidence, value2 = drawer.slot}), {
+                maxweight = 4000000,
+                slots = 500,
+            })
+            TriggerEvent("inventory:client:SetCurrentStash", Lang:t('info.current_evidence', {value = currentEvidence, value2 = drawer.slot}))
+            TriggerServerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Evidence Locker (Police)', 'blue', ('**Officer Name:** %s | **Citizen ID:** %s\n **Department:** %s | **Grade:** %s\n **Locker Number:** %s\n **Info:** Officer Accessed Evidence Locker '):format(fullname, cid, PlayerData.job.label, PlayerData.job.grade.level, drawer.slot))
+        end
+    else
+        exports['qb-menu']:closeMenu()
+    end
+end)
+
+-- file-name : qb-policejob | client.lua
+-- line : 478 (may differ mines heavily modified)
+-- Replace openArmoury with the one below
+RegisterNetEvent('qb-police:client:openArmoury', function()
+    local PlayerData = QBCore.Functions.GetPlayerData()
+    local fullname = PlayerData.charinfo.firstname.." "..PlayerData.charinfo.lastname
+    local cid = PlayerData.citizenid
+
+    local authorizedItems = {
+        label = Lang:t('menu.pol_armory'),
+        slots = 30,
+        items = {}
+    }
+    local index = 1
+    for _, armoryItem in pairs(Config.Items.items) do
+        for i=1, #armoryItem.authorizedJobGrades do
+            if armoryItem.authorizedJobGrades[i] == PlayerJob.grade.level then
+                authorizedItems.items[index] = armoryItem
+                authorizedItems.items[index].slot = index
+                index = index + 1
+            end
+        end
+    end
+    SetWeaponSeries()
+    TriggerServerEvent("inventory:server:OpenInventory", "shop", "police", authorizedItems)
+    TriggerServerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Armoury Shop (Police)', 'blue', ('**Officer Name:** %s | **Citizen ID:** %s\n **Department:** %s | **Grade:** %s\n **Info:** Officer Accessed Armoury'):format(fullname, cid, PlayerData.job.label, PlayerData.job.grade.level))
 end)
