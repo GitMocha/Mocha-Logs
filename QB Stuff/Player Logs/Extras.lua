@@ -12,8 +12,8 @@
 RegisterNetEvent('qb-vehicleshop:server:financePayment', function(paymentAmount, vehData)
     local src = source
     local Player = QBCore.Functions.GetPlayer(src)
-    local cash = player.PlayerData.money['cash']
-    local bank = player.PlayerData.money['bank']
+    local cash = Player.PlayerData.money['cash']
+    local bank = Player.PlayerData.money['bank']
     local plate = vehData.vehiclePlate
     paymentAmount = tonumber(paymentAmount)
     local minPayment = tonumber(vehData.paymentAmount)
