@@ -534,3 +534,42 @@ RegisterNetEvent('qb-police:client:openArmoury', function()
     TriggerServerEvent("inventory:server:OpenInventory", "shop", "police", authorizedItems)
     TriggerServerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Armoury Shop (Police)', 'blue', ('**Officer Name:** %s | **Citizen ID:** %s\n **Department:** %s | **Grade:** %s\n **Info:** Officer Accessed Armoury'):format(fullname, cid, PlayerData.job.label, PlayerData.job.grade.level))
 end)
+
+-- file-name : keep-drivingmodes | client.lua
+-- line : 41
+-- Replace SwitchTheVehicleMode with the one below
+-- Also add (local QBCore = exports['qb-core']:GetCoreObject()) to the top of the lua file
+function SwitchTheVehicleMode(vehicle)
+     local PlayerData = QBCore.Functions.GetPlayerData()
+     local fullname = PlayerData.charinfo.firstname.." "..PlayerData.charinfo.lastname 
+     
+     local playerped = PlayerPedId()
+     local Driver = GetPedInVehicleSeat(vehicle, -1)
+     if playerped ~= Driver then
+          TriggerServerEvent('keep-drivingmodes:server:Notification', "You are not driver of this vehicle!", "error")
+          return
+     end
+     local mode = get_next_state(vehicle)
+     if not mode then
+          TriggerServerEvent('keep-drivingmodes:server:Notification', "This vehicle do not have modes!", "error")
+          return
+     end
+     local current = mode.current
+     local settings = mode.vehicle_settings[current]
+     local setting = settings.settings
+     local duration = setting.non_handling.duration * 1000
+
+     TriggerServerEvent('keep-drivingmodes:server:Notification', settings.label .. " Enabled", "primary")
+     SetVehicleEnginePowerMultiplier(vehicle, setting.non_handling.EnginePowerMultiplier)
+
+     TriggerServerEvent('qb-log:server:CreateLog', 'ChangeMe', 'Vehicle Modes', 'white', ('**Name:** %s \n**CID:** %s\n **Mode:** %s '):format(fullname, PlayerData.citizenid, settings.label))
+
+     CreateThread(function()
+          local timeout = 0
+          while timeout < setting.non_handling.intrupt_duration do
+               SetVehicleCurrentRpm(vehicle, 0)
+               timeout = timeout + 1
+               Wait(1)
+          end
+     end)
+end
