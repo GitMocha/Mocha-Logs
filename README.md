@@ -13,7 +13,7 @@ YOU HAVENT FOLLOWED THE INSTRUCTIONS AND COPIED THE WHOLE THING
 I WILL NOT OFFER SUPPORT !!!!
 
 If you have any suggestions or would like to contribute feel
-free to make a PR or Dm me on discord @Mocha#3333.
+free to make a PR or Dm me on discord @mocha__ .
 
 I've now created a discord (link to follow). This will be for future scripts (paid and free)
 member support and suggestions/feedback. 
